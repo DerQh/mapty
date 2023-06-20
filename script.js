@@ -19,7 +19,7 @@ if (navigator.geolocation)
       const { longitude } = position.coords;
       const location = `https://www.google.com/maps/@${latitude},${longitude}`;
       const coords = [latitude, longitude];
-      const map = L.map("map").setView(coords, 19); // empty div in the html should have and ID - "MAP"
+      const map = L.map("map").setView(coords, 13); // empty div in the html should have and ID - "MAP"
 
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
