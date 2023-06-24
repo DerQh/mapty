@@ -14,6 +14,45 @@ let inputElevation = document.querySelector(".form__input--elevation");
 let map, mapEvent;
 
 // ---------------------------------------CLASSES------------------------------------------- //
+class Workouts {
+  date = new Date();
+  id = (new Date() + "").slice(-10);
+  constructor(distance, cordinates, duration) {
+    this.distance = distance;
+    this.cordinates = cordinates; // [lat, lng]
+    this.duration = duration;
+  }
+}
+
+class Running extends Workouts {
+  constructor(distance, cordinates, duration, cadence) {
+    super(distance, cordinates, duration);
+    this.cadence = cadence;
+    this.calcPace();
+  }
+
+  calcPace() {
+    // min/km
+    this.pace = this.duration / this.distance;
+    return this.pace;
+  }
+}
+class Cycling extends Workouts {
+  constructor(distance, cordinates, duration, elevationGain) {
+    super(distance, cordinates, duration);
+    this.elevationGain = elevationGain;
+  }
+  calcSpeed() {
+    this.speed = this.distance / (this.duration / 60);
+    return this.speed;
+  }
+}
+
+const eveRun = new Running(4, [39, -29], 30, 178);
+const eveCycle = new Cycling(4, [39, -29], 30, 500);
+console.log(eveCycle);
+
+// //////////////////////////////// ////// //////////////////////////////
 class App {
   #map;
   #mapEvent;
@@ -22,12 +61,7 @@ class App {
 
     form.addEventListener("submit", this.newWorkout.bind(this));
 
-    inputType.addEventListener("change", function () {
-      inputElevation
-        .closest(".form__row")
-        .classList.toggle("form__row--hidden"); // parent class
-      inputCadence.closest(".form__row").classList.toggle("form__row--hidden");
-    });
+    inputType.addEventListener("change", this.elevationFieldToggle);
   }
   getPosition() {
     //   third library leaflet  //
@@ -53,22 +87,25 @@ class App {
 
     // L.marker(coords).addTo(map).bindPopup("Current Location.").openPopup();
 
-    this.#map.on("click", function (mapE) {});
+    this.#map.on("click", this.showForm.bind(this)); // bind the this keyword to the main object
   }
-  showForm() {
+  showForm(mapE) {
     this.#mapEvent = mapE;
     // console.log(mapEvent);
     form.classList.remove("hidden");
     inputDistance.focus();
   }
-  elevationFieldToggle() {}
+  elevationFieldToggle() {
+    inputElevation.closest(".form__row").classList.toggle("form__row--hidden"); // parent class
+    inputCadence.closest(".form__row").classList.toggle("form__row--hidden");
+  }
   newWorkout(e) {
     e.preventDefault();
     console.log(this);
     // clear input fields
     inputDistance.value = inputDuration = inputCadence = inputElevation = "";
     // display marker
-    const { lat, lng } = mapEvent.latlng;
+    const { lat, lng } = this.#mapEvent.latlng;
     L.marker([lat, lng])
       .addTo(this.#map)
       .bindPopup(
