@@ -47,12 +47,19 @@ a:visited {
   padding: 3rem 5rem 4rem 5rem;
   display: flex;
   flex-direction: column;
+  text-align: center;
 }
 
 .logo {
-  height: 5.2rem;
   align-self: center;
-  margin-bottom: 4rem;
+  margin-bottom: 1rem;
+  color: rgb(48, 194, 133);
+  font-size: 30px;
+  font-weight: bold;
+  font-family: 'Montserrat';
+}
+.logo-span {
+  color: #ec9616;
 }
 
 .workouts {
