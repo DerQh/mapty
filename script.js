@@ -16,7 +16,7 @@ let map, mapEvent;
 // ---------------------------------------CLASSES------------------------------------------- //
 class Workouts {
   date = new Date();
-  id = (new Date() + "").slice(-10);
+  id = (Date.now() + "").slice(-10);
   constructor(distance, cordinates, duration) {
     this.distance = distance;
     this.cordinates = cordinates; // [lat, lng]
@@ -100,7 +100,33 @@ class App {
     inputCadence.closest(".form__row").classList.toggle("form__row--hidden");
   }
   newWorkout(e) {
+    const validInputs = (...inputs) =>
+      inputs.every((inp) => Number.isFinite(inp));
+
     e.preventDefault();
+
+    //  get data from the form
+
+    const type = inputType.value;
+    const distance = +inputDistance.value;
+    const duration = +inputDuration.value;
+    //  if runnung , create running object
+    if (type === "running") {
+      const cadence = +inputCadence.value;
+      //  check if data is valid
+      if (!validInputs(distance, duration, cadence))
+        return alert("Input has to be a positive number ! ");
+    }
+    //  if cycling , create cycling object
+    if (type === "cycling") {
+      const elevation = +inputElevation.value;
+      if (!validInputs(distance, duration, elevation))
+        return alert("Input has to be a positive number ! ");
+    }
+    // add new object to workout array
+    // render workout on map as marker
+    //  rendere workout on list
+
     console.log(this);
     // clear input fields
     inputDistance.value = inputDuration = inputCadence = inputElevation = "";
