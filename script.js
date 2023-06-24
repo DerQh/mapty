@@ -10,18 +10,29 @@ let inputElevation = document.querySelector(".form__input--elevation");
 
 let map, mapEvent;
 
-// ---------------------------------------CLASSES------------------------------------------- //
 class Workouts {
   date = new Date();
   id = (Date.now() + "").slice(-10);
   constructor(distance, cordinates, duration) {
     this.distance = distance;
-    this.cordinates = cordinates; // [lat, lng]
+    this.cordinates = cordinates;
     this.duration = duration;
   }
   setDescription() {
-    // prettier-ignore
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
 
     this.description = `${
       this.type === "running" ? "🏃🏿" : "🚴🏿‍♀️"
@@ -60,10 +71,6 @@ class Cycling extends Workouts {
   }
 }
 
-// const eveRun = new Running(4, [39, -29], 30, 178);
-// const eveCycle = new Cycling(4, [39, -29], 30, 500);
-
-// //////////////////////////////// ////// //////////////////////////////
 class App {
   #map;
   #mapEvent;
@@ -89,20 +96,17 @@ class App {
     const { longitude } = position.coords;
     const location = `https://www.google.com/maps/@${latitude},${longitude}`;
     const coords = [latitude, longitude];
-    this.#map = L.map("map").setView(coords, 13); // empty div in the html should have and ID - "MAP"
+    this.#map = L.map("map").setView(coords, 13);
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.#map);
 
-    // L.marker(coords).addTo(map).bindPopup("Current Location.").openPopup();
-
-    this.#map.on("click", this.showForm.bind(this)); // bind the this keyword to the main object
+    this.#map.on("click", this.showForm.bind(this));
   }
   showForm(mapE) {
     this.#mapEvent = mapE;
-    // console.log(mapEvent);
     form.classList.remove("hidden");
     inputDistance.focus();
   }
@@ -117,27 +121,22 @@ class App {
     setTimeout(() => (form.style.display = "grid"), 1000);
   }
   elevationFieldToggle() {
-    inputElevation.closest(".form__row").classList.toggle("form__row--hidden"); // parent class
+    inputElevation.closest(".form__row").classList.toggle("form__row--hidden");
     inputCadence.closest(".form__row").classList.toggle("form__row--hidden");
   }
   newWorkout(e) {
-    // helper funtion
     const validInputs = (...inputs) =>
       inputs.every((inp) => Number.isFinite(inp));
     const allPositive = (...inputs) => inputs.every((inp) => inp > 0);
     e.preventDefault();
-
-    //  get data from the form
 
     const type = inputType.value;
     const distance = +inputDistance.value;
     const duration = +inputDuration.value;
     const { lat, lng } = this.#mapEvent.latlng;
     let workout;
-    //  if runnung , create running object
     if (type === "running") {
       const cadence = +inputCadence.value;
-      //  check if data is valid
       if (
         !validInputs(distance, duration, cadence) ||
         !allPositive(distance, duration, cadence)
@@ -145,24 +144,19 @@ class App {
         return alert("Input has to be a positive number ! ");
       workout = new Running(distance, [lat, lng], duration, cadence);
     }
-    //  if cycling , create cycling object
     if (type === "cycling") {
       const elevation = +inputElevation.value;
       if (!validInputs(distance, duration, elevation))
         return alert("Input has to be a positive number ! ");
       workout = new Cycling(distance, [lat, lng], duration, elevation);
     }
-    // add new object to workout array
     this.#workouts.push(workout);
     console.log(workout);
 
-    // render workout on map as marker
     this.renderWorkoutMarker(workout);
 
-    //  rendere workout on list
     this.renderWorkout(workout);
 
-    // clear input fields and hide form
     this.hideForm();
   }
   renderWorkoutMarker(workout) {
@@ -227,6 +221,4 @@ class App {
   }
 }
 
-//  ---------------------------------------------------------------------------------//
-//  ----- create objects  --------//
 const app = new App();
