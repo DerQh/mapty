@@ -83,7 +83,13 @@ class App {
   #mapZoomLevel = 13;
 
   constructor() {
+    // get uer position
     this.getPosition();
+
+    // get data from local storage
+    this.getLOcalStorageData();
+
+    // event handlers
     form.addEventListener("submit", this.newWorkout.bind(this));
     inputType.addEventListener("change", this.elevationFieldToggle);
     containerWorkouts.addEventListener("click", this.moveToPopup.bind(this));
@@ -111,6 +117,9 @@ class App {
     }).addTo(this.#map);
 
     this.#map.on("click", this.showForm.bind(this));
+    this.#workouts.forEach((work) => {
+      this.renderWorkoutMarker(work);
+    });
   }
   showForm(mapE) {
     this.#mapEvent = mapE;
@@ -158,13 +167,15 @@ class App {
       workout = new Cycling(distance, [lat, lng], duration, elevation);
     }
     this.#workouts.push(workout);
-    console.log(workout);
+    // console.log(workout);
 
     this.renderWorkoutMarker(workout);
 
     this.renderWorkout(workout);
 
     this.hideForm();
+
+    this.setLocalStorage();
   }
   renderWorkoutMarker(workout) {
     L.marker(workout.cordinates)
@@ -228,21 +239,37 @@ class App {
   }
   moveToPopup(event) {
     const workoutEl = event.target.closest(".workout");
-    // console.log(workoutEl);
     if (!workoutEl) return;
 
     const workout = this.#workouts.find(
       (work) => work.id === workoutEl.dataset.id
     );
-    console.log(workout);
+    // console.log(workout);
 
     this.#map = L.map("map").setView(coords, this.#mapZoomLevel, {
       animate: true,
       pan: { duration: 1 },
     });
+  }
 
-    // using the public interface
-    workout.clicks();
+  setLocalStorage() {
+    localStorage.setItem("workouts", JSON.stringify(this.#workouts));
+  }
+
+  getLOcalStorageData() {
+    const data = JSON.parse(localStorage.getItem("workouts"));
+
+    if (!data) return;
+    this.#workouts = data;
+
+    this.#workouts.forEach((work) => {
+      this.renderWorkout(work);
+    });
+  }
+
+  reset() {
+    localStorage.removeItem("workouts");
+    location.reload();
   }
 }
 
